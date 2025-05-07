@@ -1,26 +1,22 @@
-- name: Configure frontend (Amazon Linux 2)
+- name: Configure frontend (Amazon Linux 2023)
   hosts: frontend
   become: true
   vars:
     nginx_backend_ip: "{{ backend_ip }}"  # Define the backend IP here
   tasks:
-    - name: Disable SELinux
+    - name: Disable SELinux (if applicable)
       command: echo "SELinux not applicable on Amazon Linux"
       changed_when: false
-      ignore_errors: true  # Add this to ignore errors if SELinux is not available
+      ignore_errors: true  # Ignore errors if SELinux is not available
 
     - name: Disable firewalld
-      yum:
+      dnf:
         name: firewalld
         state: absent
-
-    - name: Enable nginx1 from Amazon Linux Extras
-      command: amazon-linux-extras enable nginx1
-      register: result
-      changed_when: "'nginx1' in result.stdout"
+      ignore_errors: yes  # Ignore if firewalld is not installed
 
     - name: Install Nginx
-      yum:
+      dnf:
         name: nginx
         state: present
 
@@ -66,7 +62,7 @@
           }
 
     - name: Ensure Nginx is running
-      service:
+      systemd:
         name: nginx
         state: started
         enabled: yes
