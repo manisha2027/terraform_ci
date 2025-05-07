@@ -11,7 +11,7 @@ pipeline {
     stages {
         stage('Clone Repo') {
             steps {
-                git branch: 'main', url: 'https://github.com/RameshDumala1/terraform_ci.git'
+                git branch: 'main', url: 'https://github.com/teja384/terraform_ci.git'
             }
         }
 
@@ -19,7 +19,7 @@ pipeline {
             steps {
                 withCredentials([[ 
                     $class: 'AmazonWebServicesCredentialsBinding', 
-                    credentialsId: 'aws-credentials', 
+                    credentialsId: 'teja', 
                     accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
                     secretKeyVariable: 'AWS_SECRET_ACCESS_KEY' 
                 ]]) {
@@ -42,8 +42,8 @@ pipeline {
 
         stage('Configure VMs') {
             steps {
-                withCredentials([sshUserPrivateKey(credentialsId: 'ssh-key-ubuntu', keyFileVariable: 'UBUNTU_KEY')]) {
-                    withCredentials([sshUserPrivateKey(credentialsId: 'ssh-key-amazon', keyFileVariable: 'AMAZON_KEY')]) {
+                withCredentials([sshUserPrivateKey(credentialsId: 'Ubuntu1', keyFileVariable: 'UBUNTU_KEY')]) {
+                    withCredentials([sshUserPrivateKey(credentialsId: 'EC2', keyFileVariable: 'AMAZON_KEY')]) {
                         dir('ansible') {
                             sh '''
                                 chmod 600 $UBUNTU_KEY $AMAZON_KEY
